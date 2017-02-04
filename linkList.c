@@ -65,10 +65,18 @@ int main(int argc, char *args[]) {
 
 } // main
 
+/*------------------------- stackMode --------------------------
+|
+|  Purpose: Flow control for manipulating a linked list in Stack Mode
+|
+|  Parameters: None
+|
+|  Returns: None
+*-------------------------------------------------------------------*/
 void stackMode() {
 
-    int userValue;
-    int result;
+    int userValue;  // value received from the user on stdin
+    int result;     // return value from scanf
 
     while (1) {
 
@@ -108,7 +116,7 @@ void stackMode() {
                 int popResult;
                 popResult = popStack(&popValue);
                 if (popResult == 0) {
-                    printf("No values on stack to pop\n\n");
+                    printf("No values on stack to pop.\n\n");
                 } else {
                     printf("Value %d popped from the stack.\n\n", popValue);
                 }
@@ -121,11 +129,22 @@ void stackMode() {
     }
 }
 
+/*------------------------- pushStack --------------------------
+|
+|  Purpose: Adds a value to the top of the stack while in Stack Mode
+|
+|  Parameters:
+|      value (IN) -- Value added to the stack
+|
+|  Returns: None
+*-------------------------------------------------------------------*/
 void pushStack(int value) {
 
     node_t *newnode = malloc(sizeof(node_t));
 
     if (newnode == NULL) {
+        fprintf(stderr, "pushStack: error allocating memory\n");
+        fprintf(stderr, "Exiting linkList.c\n");
         exit(1);
     }
 
