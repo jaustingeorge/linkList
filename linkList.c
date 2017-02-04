@@ -2,7 +2,8 @@
 #include <stdio.h>
 
 void stackMode();
-void pushValue(int value);
+void pushStack(int value);
+int popStack(int *value);
 void insertSorted(int value);
 void printList();
 
@@ -73,6 +74,7 @@ void stackMode() {
 
         printf("Please select an operation:\n\n");
         printf("1: Push value on to stack\n");
+        printf("2: Pop value off of stack\n");
         printf("0: Print stack\n");
 
         result = scanf("%d", &userValue);
@@ -96,8 +98,20 @@ void stackMode() {
                     printf("Invalid value.\n");
                     continue;
                 }
-                pushValue(userValue);
+                pushStack(userValue);
                 printf("Value %d pushed on to stack.\n\n", userValue);
+                break;
+            case 2:
+                printf("\n");
+                printf("Popping value from the stack\n");
+                int popValue;
+                int popResult;
+                popResult = popStack(&popValue);
+                if (popResult == 0) {
+                    printf("No values on stack to pop\n\n");
+                } else {
+                    printf("Value %d popped from the stack.\n\n", popValue);
+                }
                 break;
             default:
                 printf("\n");
@@ -107,7 +121,7 @@ void stackMode() {
     }
 }
 
-void pushValue(int value) {
+void pushStack(int value) {
 
     node_t *newnode = malloc(sizeof(node_t));
 
@@ -124,6 +138,31 @@ void pushValue(int value) {
         newnode->next = head;
         head = newnode;
     }
+}
+
+/*------------------------- popStack --------------------------
+|
+|  Purpose: Removes the top value from the stack while in Stack Mode
+|
+|  Parameters:
+|      value (OUT) -- Value removed from the stack
+|
+|  Returns: int - zero, if there was no value on the stack
+|                 one, if the function terminated successfully
+*-------------------------------------------------------------------*/
+int popStack(int *value) {
+
+    if (head == NULL) {
+        return 0;
+    }
+
+    *value = head->value;
+
+    node_t *temp = head->next;
+    free(head);
+    head = temp;
+
+    return 1;
 }
 
 void insertSorted(int value) {
