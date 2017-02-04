@@ -1,7 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-void pushValue(int value);
+void stackMode();
+void pushStack(int value);
+int popStack(int *value);
 void insertSorted(int value);
 void printList();
 
@@ -23,59 +25,126 @@ int main(int argc, char *args[]) {
 
     while (1) {
 
-        printf("Please select an option.\n");
-        printf("0: Print list.\n");
-        printf("1: Push value on to list.\n");
-        printf("2: Insert value into sorted position in list.\n");
+        printf("Please select what type of list you would like to create.\n\n");
+        printf("1: Stack - Last-In, First-Out Structure\n");
+        printf("2: Queue - First-In, First-Out Structure\n");
+        printf("3: Ordered - Lowest Integer Value to Highest\n");
+        printf("4: Ordered - Highest Integer Value to Lowest\n");
 
         result = scanf("%d", &userValue);
         if (result == 0) {
-            printf("Error reading user input.\n");
+            getchar();
+            printf("\nPlease enter a number from the option menu.\n\n");
             continue;
         }
 
         switch (userValue) {
-            case 0:
-                printf("\n");
-                printList();
-                printf("\n");
-                break;
             case 1:
                 printf("\n");
-                printf("What value would you like to push on to the list?\n");
-                result = scanf("%d", &userValue);
-                if (result == 0) {
-                    printf("Invalid value.\n");
-                    continue;
-                }
-                pushValue(userValue);
-                printf("Value %d pushed on to list.\n\n", userValue);
+                printf("Entering Stack Mode\n");
+                stackMode();
                 break;
             case 2:
                 printf("\n");
-                printf("What value would you like to insert in the list?\n");
-                result = scanf("%d", &userValue);
-                if (result == 0) {
-                    printf("Invalid value.\n");
-                    continue;
-                }
-                insertSorted(userValue);
-                printf("Value %d inserted in the list.\n\n", userValue);
+                printf("Queue Mode not yet set up\n\n");
+                break;
+            case 3:
+                printf("\n");
+                printf("Ascending Ordered Mode not yet set up\n\n");
+                break;
+            case 4:
+                printf("\n");
+                printf("Descending Ordered Mode not yet set up\n\n");
                 break;
             default:
                 printf("\n");
-                printf("Invalid option. Please enter a number from above.\n");
+                printf("Invalid option. Please enter a number from above.\n\n");
                 printf("\n");
         } 
     }
 
 } // main
 
-void pushValue(int value) {
+/*------------------------- stackMode --------------------------
+|
+|  Purpose: Flow control for manipulating a linked list in Stack Mode
+|
+|  Parameters: None
+|
+|  Returns: None
+*-------------------------------------------------------------------*/
+void stackMode() {
+
+    int userValue;  // value received from the user on stdin
+    int result;     // return value from scanf
+
+    while (1) {
+
+        printf("Please select an operation:\n\n");
+        printf("1: Push value on to stack\n");
+        printf("2: Pop value off of stack\n");
+        printf("0: Print stack\n");
+
+        result = scanf("%d", &userValue);
+        if (result == 0) {
+            printf("stackMode: error reading user input.\n");
+            continue;
+        }
+
+        switch (userValue) {
+            case 0:
+                printf("\n");
+                char *mode = "Stack";
+                printList(mode);
+                printf("\n");
+                break;
+            case 1:
+                printf("\n");
+                printf("What value would you like to push on to the stack?\n");
+                result = scanf("%d", &userValue);
+                if (result == 0) {
+                    printf("Invalid value.\n");
+                    continue;
+                }
+                pushStack(userValue);
+                printf("Value %d pushed on to stack.\n\n", userValue);
+                break;
+            case 2:
+                printf("\n");
+                printf("Popping value from the stack\n");
+                int popValue;
+                int popResult;
+                popResult = popStack(&popValue);
+                if (popResult == 0) {
+                    printf("No values on stack to pop.\n\n");
+                } else {
+                    printf("Value %d popped from the stack.\n\n", popValue);
+                }
+                break;
+            default:
+                printf("\n");
+                printf("Invalid option. Please enter a number from above.\n");
+                printf("\n");
+        }
+    }
+}
+
+/*------------------------- pushStack --------------------------
+|
+|  Purpose: Adds a value to the top of the stack while in Stack Mode
+|
+|  Parameters:
+|      value (IN) -- Value added to the stack
+|
+|  Returns: None
+*-------------------------------------------------------------------*/
+void pushStack(int value) {
 
     node_t *newnode = malloc(sizeof(node_t));
 
     if (newnode == NULL) {
+        fprintf(stderr, "pushStack: error allocating memory\n");
+        fprintf(stderr, "Exiting linkList.c\n");
         exit(1);
     }
 
@@ -88,6 +157,31 @@ void pushValue(int value) {
         newnode->next = head;
         head = newnode;
     }
+}
+
+/*------------------------- popStack --------------------------
+|
+|  Purpose: Removes the top value from the stack while in Stack Mode
+|
+|  Parameters:
+|      value (OUT) -- Value removed from the stack
+|
+|  Returns: int - zero, if there was no value on the stack
+|                 one, if the function terminated successfully
+*-------------------------------------------------------------------*/
+int popStack(int *value) {
+
+    if (head == NULL) {
+        return 0;
+    }
+
+    *value = head->value;
+
+    node_t *temp = head->next;
+    free(head);
+    head = temp;
+
+    return 1;
 }
 
 void insertSorted(int value) {
@@ -126,9 +220,9 @@ void insertSorted(int value) {
 }
 
 
-void printList() {
+void printList(char *mode) {
 
-    printf("Printing list\n");
+    printf("Printing %s\n", mode);
     
     node_t *temp = head;
 
