@@ -1,18 +1,11 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include "stack.h"
 
 void stackMode();
-void pushStack(int value);
-int popStack(int *value);
-void insertSorted(int value);
-void printList();
-
-typedef struct node {
-    int value;
-    struct node *next;
-} node_t;
 
 node_t *head;
+node_t *tail;
 
 int main(int argc, char *args[]) {
 
@@ -20,6 +13,7 @@ int main(int argc, char *args[]) {
     int result;
     
     head = NULL;
+    tail = NULL;
 
     printf("Welcome to linkList.c\n\n");
 
@@ -46,7 +40,9 @@ int main(int argc, char *args[]) {
                 break;
             case 2:
                 printf("\n");
-                printf("Queue Mode not yet set up\n\n");
+                //printf("Entering Queue Mode\n");
+                printf("Queue Mode Disabled\n");
+                //queueMode();
                 break;
             case 3:
                 printf("\n");
@@ -95,7 +91,8 @@ void stackMode() {
             case 0:
                 printf("\n");
                 char *mode = "Stack";
-                printList(mode);
+                printf("Printing Stack\n");
+                printStack(head);
                 printf("\n");
                 break;
             case 1:
@@ -106,7 +103,13 @@ void stackMode() {
                     printf("Invalid value.\n");
                     continue;
                 }
-                pushStack(userValue);
+                int pushResult;
+                pushResult = pushStack(&head, userValue);
+                if (pushResult == 0) {
+                    printf("Error pushing value to stack... "
+                           "Exiting program\n");
+                    exit(1);
+                }
                 printf("Value %d pushed on to stack.\n\n", userValue);
                 break;
             case 2:
@@ -114,7 +117,7 @@ void stackMode() {
                 printf("Popping value from the stack\n");
                 int popValue;
                 int popResult;
-                popResult = popStack(&popValue);
+                popResult = popStack(&head, &popValue);
                 if (popResult == 0) {
                     printf("No values on stack to pop.\n\n");
                 } else {
@@ -128,62 +131,7 @@ void stackMode() {
         }
     }
 }
-
-/*------------------------- pushStack --------------------------
-|
-|  Purpose: Adds a value to the top of the stack while in Stack Mode
-|
-|  Parameters:
-|      value (IN) -- Value added to the stack
-|
-|  Returns: None
-*-------------------------------------------------------------------*/
-void pushStack(int value) {
-
-    node_t *newnode = malloc(sizeof(node_t));
-
-    if (newnode == NULL) {
-        fprintf(stderr, "pushStack: error allocating memory\n");
-        fprintf(stderr, "Exiting linkList.c\n");
-        exit(1);
-    }
-
-    newnode->value = value;
-    newnode->next = NULL;
-
-    if (head == NULL) {
-        head = newnode;
-    } else {
-        newnode->next = head;
-        head = newnode;
-    }
-}
-
-/*------------------------- popStack --------------------------
-|
-|  Purpose: Removes the top value from the stack while in Stack Mode
-|
-|  Parameters:
-|      value (OUT) -- Value removed from the stack
-|
-|  Returns: int - zero, if there was no value on the stack
-|                 one, if the function terminated successfully
-*-------------------------------------------------------------------*/
-int popStack(int *value) {
-
-    if (head == NULL) {
-        return 0;
-    }
-
-    *value = head->value;
-
-    node_t *temp = head->next;
-    free(head);
-    head = temp;
-
-    return 1;
-}
-
+/*
 void insertSorted(int value) {
 
     node_t *newNode = malloc(sizeof(node_t));
@@ -219,6 +167,100 @@ void insertSorted(int value) {
     temp->next = newNode;
 }
 
+void queueMode() {
+
+    int userValue;  // value received from the user on stdin
+    int result;     // return value from scanf
+
+    while (1) {
+
+        printf("Please select an operation:\n\n");
+        printf("1: Enqueue value on to queue\n");
+        printf("2: Dequeue value from queue\n");
+        printf("0: Print stack\n");
+
+        result = scanf("%d", &userValue);
+        if (result == 0) {
+            printf("queueMode: error reading user input.\n");
+            continue;
+        }
+
+        switch (userValue) {
+            case 0:
+                printf("\n");
+                char *mode = "Queue";
+                printList(mode);
+                printf("\n");
+                break;
+            case 1:
+                printf("\n");
+                printf("What value would you like to enqueue?\n");
+                result = scanf("%d", &userValue);
+                if (result == 0) {
+                    printf("Invalid value.\n");
+                    continue;
+                }
+                enqueue(userValue);
+                printf("Value %d enqueued.\n\n", userValue);
+                break;
+            case 2:
+                printf("\n");
+                printf("Dequeuing value\n");
+                int dequeueValue;
+                int dequeueResult;
+                dequeueResult = dequeue(&dequeueValue);
+                if (dequeueResult == 0) {
+                    printf("No values on queue.\n\n");
+                } else {
+                    printf("Value %d dequeued.\n\n", dequeueValue);
+                }
+                break;
+            default:
+                printf("\n");
+                printf("Invalid option. Please enter a number from above.\n");
+                printf("\n");
+        }
+    }
+}
+
+void enqueue(int value) {
+    node_t *node = malloc(sizeof(node_t));
+    node->value = value;
+    node->last = NULL;
+
+    if (node == NULL) {
+        fprintf(stderr, "enqueue: error allocating memory\n");
+        fprintf(stderr, "Exiting linkList.c\n");
+        exit(1);
+    }
+
+    if (head == NULL) {
+        head = node;
+        tail = node;
+    } else {
+        node->next = head;
+        head->last = node;
+        head = node;
+    }
+}
+
+int dequeue(int *value) {
+    if (head == NULL) {
+        return 0;
+    }
+    
+    *value = tail->value;
+    node_t *temp = tail;
+    
+    if (head == tail) {
+        head = NULL;
+    } else {
+        tail = temp->last;
+        tail->next = NULL;
+    }
+    free(temp);
+    return 1;
+}
 
 void printList(char *mode) {
 
@@ -236,3 +278,4 @@ void printList(char *mode) {
     }
     printf("\n");
 }
+*/
